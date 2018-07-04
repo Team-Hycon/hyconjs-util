@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outDir": "lib",
+        "sourceMap": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./types"
+        ],
+        "jsx": "react"
+    },
+    "include": [
+        "src/**/*",
+        "test/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
