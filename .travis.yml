@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "10.4.1"
+
+cache:
+  directories:
+    - node_modules
+
+script:
+  - npm install
+  - npm run-script lint
+  - npm run-script build

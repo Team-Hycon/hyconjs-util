@@ -1,4 +1,6 @@
 # Hycon javascript utilities
+[![Build Status](https://travis-ci.org/arigatodl/hyconjs-util.svg?branch=master)](https://travis-ci.org/arigatodl/hyconjs-util)
+
 Common javascript functions for Hycon.
 
 ## Examples
