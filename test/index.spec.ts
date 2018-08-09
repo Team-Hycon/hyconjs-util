@@ -14,7 +14,7 @@ describe("Test", () => {
         const decryptedData = utils.decrypt(password, iv, encryptedData)
         expect(decryptedData.toString()).toEqual(data)
 
-        const result = utils.decrypt(password+'.', iv, encryptedData)
+        const result = utils.decrypt(password + ".", iv, encryptedData)
         expect(result).toBeFalsy()
     })
 })
