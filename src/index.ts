@@ -1,5 +1,6 @@
 import * as Base58 from "base-58"
 import * as blake2b from "blake2b"
+import * as crypto from "crypto"
 import Long = require("long")
 
 export function blake2bHash(ob: Uint8Array | string): Uint8Array {
@@ -82,4 +83,25 @@ export function hyconfromString(val: string): Long {
 
 export function encodingMnemonic(str: string): string {
     return str.normalize("NFKD")
+}
+
+export function encrypt(password: string, data: string): { iv: string, encryptedData: string } {
+    const key = Buffer.from(blake2bHash(password))
+    const iv = crypto.randomBytes(16)
+    const cipher = crypto.createCipheriv("aes-256-cbc", key, iv)
+    const encryptedData = Buffer.concat([cipher.update(Buffer.from(data)), cipher.final()])
+    return { iv: iv.toString("hex"), encryptedData: encryptedData.toString("hex") }
+}
+
+export function decrypt(password: string, iv: string, data: string): Buffer | boolean {
+    try {
+        const key = Buffer.from(blake2bHash(password))
+        const ivBuffer = Buffer.from(iv, "hex")
+        const dataBuffer = Buffer.from(data, "hex")
+        const decipher = crypto.createDecipheriv("aes-256-cbc", key, ivBuffer)
+        const originalData = Buffer.concat([decipher.update(dataBuffer), decipher.final()])
+        return originalData
+    } catch (error) {
+        return false
+    }
 }

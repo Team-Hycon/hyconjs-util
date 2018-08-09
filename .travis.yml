@@ -10,3 +10,4 @@ script:
   - npm install
   - npm run-script lint
   - npm run-script build
+  - npm test

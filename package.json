@@ -5,7 +5,8 @@
     "main": "lib/index.js",
     "scripts": {
         "build": "tsc --declaration",
-        "lint": "tslint -p tsconfig.json"
+        "lint": "tslint -p tsconfig.json",
+        "test": "ts-node node_modules/jasmine/bin/jasmine test/*"
     },
     "keywords": [
         "hycon",
@@ -31,8 +32,11 @@
         "long": "^4.0.0"
     },
     "devDependencies": {
-        "@types/node": "^10.5.1",
+        "@types/jasmine": "^2.8.8",
         "@types/long": "^4.0.0",
+        "@types/node": "^10.5.1",
+        "jasmine": "^3.2.0",
+        "ts-node": "^7.0.0",
         "tslint": "^5.10.0",
         "typescript": "^2.9.2"
     }
