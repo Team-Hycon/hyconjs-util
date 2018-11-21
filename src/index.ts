@@ -2,6 +2,8 @@ import * as Base58 from "base-58"
 import * as blake2b from "blake2b"
 import * as crypto from "crypto"
 import Long = require("long")
+import * as secp256k1 from "secp256k1"
+import * as proto from "./serialization/proto"
 
 export function blake2bHash(ob: Uint8Array | string): Uint8Array {
     typeof ob === "string" ? ob = Buffer.from(ob) : ob = ob
@@ -103,5 +105,43 @@ export function decrypt(password: string, iv: string, data: string): Buffer | bo
         return originalData
     } catch (error) {
         return false
+    }
+}
+
+export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string): {signature: string, recovery: number} {
+    try {
+        const from = addressToUint8Array(fromAddress)
+        const to = addressToUint8Array(toAddress)
+
+        const iTx: proto.ITx = {
+            amount: hyconfromString(amount),
+            fee: hyconfromString(minerFee),
+            from,
+            nonce,
+            to,
+        }
+
+        let signature: string = ""
+        let recovery: number = -1
+        if (Date.now() <= 1544108400000) {
+            const protoTx = proto.Tx.encode(iTx).finish()
+            const txHash = blake2bHash(protoTx)
+            const oldSignature = secp256k1.sign(Buffer.from(txHash), Buffer.from(privateKey, "hex"))
+
+            signature = oldSignature.signature.toString("hex")
+            recovery = oldSignature.recovery
+        } else {
+            const iTxNew = Object.assign({ networkid: "hycon" }, iTx)
+            const protoTxNew = proto.Tx.encode(iTxNew).finish()
+            const txHashNew = blake2bHash(protoTxNew)
+            const newSignature = secp256k1.sign(Buffer.from(txHashNew), Buffer.from(privateKey, "hex"))
+
+            signature = newSignature.signature.toString("hex")
+            recovery =  newSignature.recovery
+        }
+
+        return {signature, recovery}
+    } catch (error) {
+
     }
 }

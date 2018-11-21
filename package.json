@@ -6,7 +6,8 @@
     "scripts": {
         "build": "tsc --declaration",
         "lint": "tslint -p tsconfig.json",
-        "test": "ts-node node_modules/jasmine/bin/jasmine test/*"
+        "test": "ts-node node_modules/jasmine/bin/jasmine test/*",
+        "protogen": "pbjs -t static-module -w commonjs -o src/serialization/proto.js proto/tx.proto &&  pbts -o src/serialization/proto.d.ts src/serialization/proto.js"
     },
     "keywords": [
         "hycon",
@@ -29,7 +30,9 @@
     "dependencies": {
         "base-58": "0.0.1",
         "blake2b": "^2.1.2",
-        "long": "^4.0.0"
+        "long": "^4.0.0",
+        "protobufjs": "^6.8.8",
+        "secp256k1": "^3.5.2"
     },
     "devDependencies": {
         "@types/jasmine": "^2.8.8",
