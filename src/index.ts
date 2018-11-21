@@ -108,7 +108,7 @@ export function decrypt(password: string, iv: string, data: string): Buffer | bo
     }
 }
 
-export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string): {signature: string, recovery: number} {
+export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string): {signature: string, recovery: number, newSignature: string, newRecovery: number} {
     try {
         const from = addressToUint8Array(fromAddress)
         const to = addressToUint8Array(toAddress)
@@ -123,25 +123,28 @@ export function signTx(fromAddress: string, toAddress: string, amount: string, m
 
         let signature: string = ""
         let recovery: number = -1
+        let newSignature: string = ""
+        let newRecovery: number = -1
+        const iTxNew = Object.assign({ networkid: "hycon" }, iTx)
+        const protoTxNew = proto.Tx.encode(iTxNew).finish()
+        const txHashNew = blake2bHash(protoTxNew)
+        const newSign = secp256k1.sign(Buffer.from(txHashNew), Buffer.from(privateKey, "hex"))
         if (Date.now() <= 1544108400000) {
             const protoTx = proto.Tx.encode(iTx).finish()
             const txHash = blake2bHash(protoTx)
-            const oldSignature = secp256k1.sign(Buffer.from(txHash), Buffer.from(privateKey, "hex"))
+            const oldSign = secp256k1.sign(Buffer.from(txHash), Buffer.from(privateKey, "hex"))
 
-            signature = oldSignature.signature.toString("hex")
-            recovery = oldSignature.recovery
+            signature = oldSign.signature.toString("hex")
+            recovery = oldSign.recovery
+            newSignature = newSign.signature.toString("hex")
+            newRecovery = newSign.recovery
         } else {
-            const iTxNew = Object.assign({ networkid: "hycon" }, iTx)
-            const protoTxNew = proto.Tx.encode(iTxNew).finish()
-            const txHashNew = blake2bHash(protoTxNew)
-            const newSignature = secp256k1.sign(Buffer.from(txHashNew), Buffer.from(privateKey, "hex"))
-
-            signature = newSignature.signature.toString("hex")
-            recovery =  newSignature.recovery
+            signature = newSign.signature.toString("hex")
+            recovery =  newSign.recovery
         }
 
-        return {signature, recovery}
+        return {signature, recovery, newSignature, newRecovery}
     } catch (error) {
-
+        throw new Error(`Sign is invalid.`)
     }
 }
