@@ -1,6 +1,6 @@
 {
     "name": "@glosfer/hyconjs-util",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "description": "Common javascript functions for Hycon",
     "main": "lib/index.js",
     "scripts": {
