@@ -28,8 +28,11 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/bip39": "^2.4.0",
         "base-58": "0.0.1",
+        "bip39": "^2.5.0",
         "blake2b": "^2.1.2",
+        "hdkey": "^1.1.0",
         "long": "^4.0.0",
         "protobufjs": "^6.8.8",
         "secp256k1": "^3.5.2"
