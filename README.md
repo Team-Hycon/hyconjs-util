@@ -54,4 +54,6 @@ If you'd like to help us out, the [Pull Request](https://github.com/arigatodl/hy
 
 ## Authors
 
-* **Dulguun Batmunkh** - *Initial work* <dulguun@glosfer.com>
+* **Dulguun Batmunkh** - *Initial work* <dulguunbatmunkh@gmail.com>
+* **윤주원** - *wallet and mnemonic* <yjw@glosfer.com>
+* **김지민** - *hdwallet* <kjm@glosfer.com>
