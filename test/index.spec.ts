@@ -26,11 +26,10 @@ describe("Test", () => {
             "0.000000001",
             1024,
             "e09167abb9327bb3748e5dd1b9d3d40832b33eb0b041deeee8e44ff47030a61d",
+            "hycon",
         )
-        expect(result.signature).toEqual("769f69d5a11f634dcb1e8b8f081c6b36b2e37b0a8f1b416314d5a3ceac27cc631e0ec12fd04473e8a168e2556897c55cd7f5e06f3ab917729176aa2e4b002d52")
-        expect(result.recovery).toEqual(0)
-        expect(result.newSignature).toEqual("fd67de0827ccf8bc957eeb185ba0ea78aa1cd5cad74aea40244361ee7df68e36025aebc4ae6b18628135ea3ef5a70ea3681a7082c44af0899f0f59b50f2707b9")
-        expect(result.newRecovery).toEqual(1)
+        expect(result.signature).toEqual("fd67de0827ccf8bc957eeb185ba0ea78aa1cd5cad74aea40244361ee7df68e36025aebc4ae6b18628135ea3ef5a70ea3681a7082c44af0899f0f59b50f2707b9")
+        expect(result.recovery).toEqual(1)
     })
 
     it("Should signTxWithHDWallet then get same data", () => {
@@ -41,11 +40,10 @@ describe("Test", () => {
             1,
             "xprv9s21ZrQH143K4bekgsnc9DtUYZzjjjT9MrcZfQHvKKq7CkifHoAXC58LBFGjjpX6bSyp31mwTtbEMW6NAjV19QaQj6hVpz5Nphr3XiN5fbT",
             0,
+            "hycon",
         )
-        expect(result.signature).toEqual("859e21720636cd0706a40ce6898cbd472071504053677496607136c06be2b87378c65941c11ce098ba3ffdb1dc5c9302d6255ea2be3406556235c275c5c8a2b0")
+        expect(result.signature).toEqual("dbc4d77c31fbb69be70056b18dfe1e832585d65bd72284d7f503db9ff806d6100e5823172b6b1b1f30ac7ce1895d4c98baa23331951da980a59b2cc2abd797bb")
         expect(result.recovery).toEqual(1)
-        expect(result.newSignature).toEqual("dbc4d77c31fbb69be70056b18dfe1e832585d65bd72284d7f503db9ff806d6100e5823172b6b1b1f30ac7ce1895d4c98baa23331951da980a59b2cc2abd797bb")
-        expect(result.newRecovery).toEqual(1)
     })
 
     it("Should createWallet then get same data", () => {

@@ -118,7 +118,7 @@ export function decrypt(password: string, iv: string, data: string): Buffer | bo
     }
 }
 
-export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string): { signature: string, recovery: number, newSignature: string, newRecovery: number } {
+export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string, networkid: string): { signature: string, recovery: number } {
     try {
         const from = addressToUint8Array(fromAddress)
         const to = addressToUint8Array(toAddress)
@@ -127,42 +127,28 @@ export function signTx(fromAddress: string, toAddress: string, amount: string, m
             amount: hyconfromString(amount),
             fee: hyconfromString(minerFee),
             from,
+            networkid,
             nonce,
             to,
         }
 
-        let signature: string = ""
-        let recovery: number = -1
-        let newSignature: string = ""
-        let newRecovery: number = -1
-        const iTxNew = Object.assign({ networkid: "hycon" }, iTx)
-        const protoTxNew = proto.Tx.encode(iTxNew).finish()
+        const protoTxNew = proto.Tx.encode(iTx).finish()
         const txHashNew = blake2bHash(protoTxNew)
         const newSign = secp256k1.sign(Buffer.from(txHashNew), Buffer.from(privateKey, "hex"))
-        if (Date.now() <= 1544108400000) {
-            const protoTx = proto.Tx.encode(iTx).finish()
-            const txHash = blake2bHash(protoTx)
-            const oldSign = secp256k1.sign(Buffer.from(txHash), Buffer.from(privateKey, "hex"))
 
-            signature = oldSign.signature.toString("hex")
-            recovery = oldSign.recovery
-            newSignature = newSign.signature.toString("hex")
-            newRecovery = newSign.recovery
-        } else {
-            signature = newSign.signature.toString("hex")
-            recovery = newSign.recovery
-        }
+        const signature = newSign.signature.toString("hex")
+        const recovery = newSign.recovery
 
-        return { signature, recovery, newSignature, newRecovery }
+        return { signature, recovery }
     } catch (error) {
         throw new Error(`Sign is invalid.`)
     }
 }
 
-export function signTxWithHDWallet(toAddress: string, amount: string, minerFee: string, nonce: number, privateExtendedKey: string, index: number): { signature: string, recovery: number, newSignature: string, newRecovery: number } {
+export function signTxWithHDWallet(toAddress: string, amount: string, minerFee: string, nonce: number, privateExtendedKey: string, index: number, networkid: string): { signature: string, recovery: number } {
     try {
         const { address, privateKey } = deriveWallet(privateExtendedKey, index)
-        return this.signTx(address, toAddress, amount, minerFee, nonce, privateKey)
+        return this.signTx(address, toAddress, amount, minerFee, nonce, privateKey, networkid)
     } catch (error) {
         throw new Error(`Failed to signTxWithHDWallet : ${error}`)
     }
