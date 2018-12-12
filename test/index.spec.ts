@@ -1,4 +1,5 @@
 import "jasmine"
+import Long = require("long")
 import * as utils from "../src/index"
 
 describe("Test", () => {
@@ -72,5 +73,15 @@ describe("Test", () => {
         const result = utils.getWalletFromExtKey("xprv9s21ZrQH143K4bekgsnc9DtUYZzjjjT9MrcZfQHvKKq7CkifHoAXC58LBFGjjpX6bSyp31mwTtbEMW6NAjV19QaQj6hVpz5Nphr3XiN5fbT", 1)
         expect(result.address).toEqual("H3cpQEhLs3pmwyTnv7PBHmux8CrRBA72d")
         expect(result.privateKey).toEqual("1a6374f984be521f09a96c4842ec3e66a37e0239b95bd0e13d9632fa8f7dbc4a")
+    })
+
+    it("Should strict Add is overflow data", () => {
+        function result() { return utils.strictAdd(Long.MAX_UNSIGNED_VALUE, Long.UONE) }
+        expect(result).toThrowError()
+    })
+
+    it("Should strict Add is correct data", () => {
+        const result = utils.strictAdd(utils.hyconfromString("234.72031"), utils.hyconfromString("180.400000001"))
+        expect(utils.hycontoString(result)).toEqual("415.120310001")
     })
 })
