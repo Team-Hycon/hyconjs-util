@@ -81,14 +81,14 @@ export function hycontoString(val: Long): string {
 }
 
 export function hyconfromString(val: string): Long {
-    if (val === "" || val === undefined || val === null) { return Long.fromNumber(0, true) }
+    if (val === "" || val === undefined || val === null) { return Long.UZERO }
     if (val[val.length - 1] === ".") { val += "0" }
     const arr = val.toString().split(".")
-    let hycon = Long.fromString(arr[0], true).multiply(Math.pow(10, 9))
+    let hycon = Long.fromString(arr[0], true).multiply(Math.pow(10, 9)).toUnsigned()
     if (arr.length > 1) {
         arr[1] = arr[1].length > 9 ? arr[1].slice(0, 9) : arr[1]
-        const subCon = Long.fromString(arr[1], true).multiply(Math.pow(10, 9 - arr[1].length))
-        hycon = hycon.add(subCon)
+        const subCon = Long.fromString(arr[1], true).multiply(Math.pow(10, 9 - arr[1].length)).toUnsigned()
+        hycon = strictAdd(hycon, subCon)
     }
     return hycon.toUnsigned()
 }
@@ -118,7 +118,7 @@ export function decrypt(password: string, iv: string, data: string): Buffer | bo
     }
 }
 
-export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string, networkid: string): { signature: string, recovery: number } {
+export function signTx(fromAddress: string, toAddress: string, amount: string, minerFee: string, nonce: number, privateKey: string, networkid: string = "hycon"): { signature: string, recovery: number } {
     try {
         const from = addressToUint8Array(fromAddress)
         const to = addressToUint8Array(toAddress)
@@ -132,12 +132,12 @@ export function signTx(fromAddress: string, toAddress: string, amount: string, m
             to,
         }
 
-        const protoTxNew = proto.Tx.encode(iTx).finish()
-        const txHashNew = blake2bHash(protoTxNew)
-        const newSign = secp256k1.sign(Buffer.from(txHashNew), Buffer.from(privateKey, "hex"))
+        const protoTx = proto.Tx.encode(iTx).finish()
+        const txHash = blake2bHash(protoTx)
+        const sign = secp256k1.sign(Buffer.from(txHash), Buffer.from(privateKey, "hex"))
 
-        const signature = newSign.signature.toString("hex")
-        const recovery = newSign.recovery
+        const signature = sign.signature.toString("hex")
+        const recovery = sign.recovery
 
         return { signature, recovery }
     } catch (error) {
@@ -145,7 +145,7 @@ export function signTx(fromAddress: string, toAddress: string, amount: string, m
     }
 }
 
-export function signTxWithHDWallet(toAddress: string, amount: string, minerFee: string, nonce: number, privateExtendedKey: string, index: number, networkid: string): { signature: string, recovery: number } {
+export function signTxWithHDWallet(toAddress: string, amount: string, minerFee: string, nonce: number, privateExtendedKey: string, index: number, networkid: string = "hycon"): { signature: string, recovery: number } {
     try {
         const { address, privateKey } = deriveWallet(privateExtendedKey, index)
         return this.signTx(address, toAddress, amount, minerFee, nonce, privateKey, networkid)
@@ -261,4 +261,21 @@ function checkPublicKey(publicKey: Buffer, privateKey: Buffer): boolean {
         }
     }
     return isEqual
+}
+
+export function strictAdd(a: Long, b: Long) {
+    const maxB = strictSub(Long.MAX_UNSIGNED_VALUE, a)
+    const maxA = strictSub(Long.MAX_UNSIGNED_VALUE, b)
+
+    if (b.greaterThan(maxB) || a.greaterThan(maxA)) {
+        throw new Error("Overflow")
+    }
+    return a.add(b)
+}
+
+export function strictSub(a: Long, b: Long) {
+    if (a.lessThan(b) || b.greaterThan(a)) {
+        throw new Error("Underflow")
+    }
+    return a.sub(b)
 }
