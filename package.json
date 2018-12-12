@@ -1,8 +1,8 @@
 {
     "name": "@glosfer/hyconjs-util",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Common javascript functions for Hycon",
-    "main": "lib/index.js",
+    "main": "lib/src/index.js",
     "scripts": {
         "build": "tsc --declaration",
         "lint": "tslint -p tsconfig.json",
