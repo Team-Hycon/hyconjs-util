@@ -81,7 +81,7 @@ export function hycontoString(val: Long): string {
 }
 
 export function hyconfromString(val: string): Long {
-    if (val === "" || val === undefined || val === null) { return Long.UZERO }
+    if (!val  || parseFloat(val) === 0) { return Long.UZERO }
     if (val[val.length - 1] === ".") { val += "0" }
     const arr = val.toString().split(".")
     let hycon = Long.fromString(arr[0], true).multiply(Math.pow(10, 9)).toUnsigned()
@@ -161,7 +161,7 @@ export function getMnemonic(language: string): string {
 
 export function createWallet(mnemonic: string, passphrase: string = "", language: string = "english"): { address: string, privateKey: string } {
     try {
-        if (!bip39.validateMnemonic(mnemonic, getBip39Wordlist(language))) {
+        if (!validateMnemonic(mnemonic, language)) {
             throw new Error("mnemonic is invalid.")
         }
 
@@ -179,7 +179,7 @@ export function createWallet(mnemonic: string, passphrase: string = "", language
 
 export function createHDWallet(mnemonic: string, passphrase: string = "", language: string = "english"): string {
     try {
-        if (!bip39.validateMnemonic(mnemonic, getBip39Wordlist(language))) {
+        if (!validateMnemonic(mnemonic, language)) {
             throw new Error("mnemonic is invalid.")
         }
         const seed: Buffer = bip39.mnemonicToSeed(mnemonic, passphrase)
@@ -199,6 +199,26 @@ export function getWalletFromExtKey(privateExtendedKey: string, index: number): 
     } catch (error) {
         throw new Error(`Failed to getWalletFromExtKey : ${error}`)
     }
+}
+
+export function validateMnemonic(mnemonic: string, language: string): boolean {
+    return bip39.validateMnemonic(mnemonic, getBip39Wordlist(language))
+}
+
+export function verifyPrivatekey(privateKey: Buffer): boolean {
+    return secp256k1.privateKeyVerify(privateKey)
+}
+
+export function createPublickey(privateKey: Buffer): Buffer {
+    return secp256k1.publicKeyCreate(privateKey)
+}
+
+export function recoverPublickey(hash: Buffer, signature: Buffer, recovery: number): Buffer {
+    return secp256k1.recover(hash, signature, recovery)
+}
+
+export function verifySign(hash: Buffer, signature: Buffer, publickey: Buffer): boolean {
+    return secp256k1.verify(hash, signature, publickey)
 }
 
 function deriveWallet(privateExtendedKey: string, index: number = 0): { address: string, privateKey: string } {
@@ -247,7 +267,7 @@ function getBip39Wordlist(language?: string) {
     }
 }
 
-function checkPublicKey(publicKey: Buffer, privateKey: Buffer): boolean {
+export function checkPublicKey(publicKey: Buffer, privateKey: Buffer): boolean {
     let isEqual = true
     const secpPublicKey = secp256k1.publicKeyCreate(privateKey)
     if (publicKey.length !== secpPublicKey.length) {
