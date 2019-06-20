@@ -1,6 +1,6 @@
 {
     "name": "@glosfer/hyconjs-util",
-    "version": "0.1.2",
+    "version": "0.1.4",
     "description": "Common javascript functions for Hycon",
     "main": "lib/src/index.js",
     "scripts": {
@@ -16,12 +16,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/arigatodl/hyconjs-util.git"
+        "url": "git://github.com/Team-Hycon/hyconjs-util.git"
     },
     "bugs": {
-        "url": "https://github.com/arigatodl/hyconjs-util/issues"
+        "url": "https://github.com/Team-Hycon/hyconjs-util/issues"
     },
-    "homepage": "https://github.com/arigatodl/hyconjs-util",
+    "homepage": "https://github.com/Team-Hycon/hyconjs-util",
     "publishConfig": {
         "access": "public"
     },
